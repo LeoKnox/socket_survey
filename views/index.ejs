@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>Sockets</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function (){
+
+                var socket = io();
+                socket.on('greeting', function(data) {
+                    console.log(data.msg);
+                    //socket.emit('thankyou', {msg: $("form").serializeArray()});
+                });
+                
+                $("button").click(function(e){
+                    e.preventDefault(); // prevents refresh from form submit(or other event)
+                    var z = Math.floor(Math.random()*1001);
+                    socket.emit('new-form', { data: $('form').serializeArray(), 'lucky':z});
+                });
+
+                socket.on('form-data', function(data) {
+                    console.log(data);
+                    document.getElementById("data").innerHTML="Hello your data is ";
+                    for (var x = 0; x < data.data.length; x++) {
+                    document.getElementById("data").innerHTML+=" " + data.data[x].name + " - " + data.data[x].value + " : ";
+                }
+                    document.getElementById("data").innerHTML+="Your lucky number is ";
+                    document.getElementById("data").innerHTML+=data.lucky;
+                })
+            });
+        </script>
+    </head>
+    <body>
+        <h2>Fun with sockets</h2>
+        <form action="data">
+            Name:
+            <input type="text" name="name"><br>
+            Favorite Language:
+            <select name="language">
+                <option value = "C">C</option>
+                <option value = "JS">JS</option>
+                <option value = "Node">Node</option>
+            </select><br>
+            Location:
+            <select name="location">
+                <option value = "Seattle">Seattle</option>
+                <option value = "Bellevue">Bellevue</option>
+            </select><br>
+            Comments:<br>
+            <textarea name="comment"></textarea>
+        </form>
+        <button>serialize</button>
+        <div id="data">
+        </div>
+    </body>
+</html>
